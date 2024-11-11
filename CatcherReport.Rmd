@@ -1,0 +1,115 @@
+---
+output:
+  pdf_document: 
+    latex_engine: xelatex
+    keep_tex: false
+geometry: portrait
+ 
+header-includes:
+ 
+- \usepackage{booktabs}
+- \usepackage{colortbl}
+- \usepackage{subfig}
+- \usepackage{floatrow}
+- \usepackage{sectsty}
+- \usepackage{titlesec}
+- \usepackage{fontspec}
+- \usepackage{float}
+- \graphicspath{{/Users/aaronstaehely/Documents/CCU Analytics/Logos}}
+- \newfontfamily\CoastalFont[Path=/Users/aaronstaehely/Library/Fonts/City Bold/]{City Bold.ttf}
+- \newenvironment{Coastaltablefont}{\CoastalFont}{}
+- \newfontfamily\NewFont[Path=/System/Library/Fonts/]{Avenir.ttc}
+- \newenvironment{ctable2}{\Newfont}{}
+- \newgeometry{left=1.5cm, right=1.5cm, top=0.5cm, bottom=0.1cm}
+---
+```{r setup, include=FALSE}
+#
+library(webshot)
+library(tidyverse)
+library(kableExtra)
+library(gridExtra)
+library(gtsummary)
+library(pak)
+library(kableExtra)
+library(knitr)
+library(flextable)
+library(pandoc)
+library(ggplot2)
+library(cowplot)
+library(plotly)
+library(gridExtra)
+opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(fig.pos = '!h')
+```
+\begin{center}
+\CoastalFont\textbf{\LARGE `r params$catcher` - Post Game Report}
+\end{center}
+
+\vspace{-1cm}
+\hspace{-6cm}
+\includegraphics[width = 2cm, height = 1cm]{CCUlogo}
+\hspace{14.5cm}
+\vspace{-0.4cm}
+\includegraphics[width = 2cm, height = 1cm]{SBClogo}
+\vspace{-5mm}
+\begin{center}
+\CoastalFont\textbf{\Large Receiving}
+\end{center}
+
+```{r +/-, echo = FALSE, warning = FALSE }
+kable(game_summary_table, table.envir = 'NewFont', format = "latex",  linesep = "") %>%
+  kable_styling(latex_options = "HOLD_position", position = "center")%>%
+      column_spec(1,border_left = TRUE) %>%
+      column_spec(3, bold = T, border_left = T, color = 'white',
+                  background = ifelse('Game +/-' > 0 & 'Game +/-' < 3, '#93EA8E',
+                                      ifelse('Game +/-' >=3,'#339a1d',
+                                             ifelse('Game +/-' < 0 & 'Game +/-' > -3, '#eaa48e', '#ba1c0f')))) %>%
+      row_spec(row = 0, color = "white", background = "#006F71") %>%
+      column_spec(ncol(game_summary_table), border_right = TRUE)
+```
+\vspace{-5mm}
+\centering
+```{r Today Arrange, echo = FALSE, warning = FALSE, fig.width=7.5, fig.height=3, position='center'}
+grid.arrange(StolenStrikes, LostStrikes, ncol = 2)
+```
+
+```{r log, echo=FALSE, warning=FALSE }
+
+kable(pitch_log, table.envir = 'NewFont', format = "latex",  linesep = "") %>%
+      row_spec(seq(2, nrow(pitch_log), by = 2), background = "#f2f2f2") %>%
+  kable_styling(latex_options = "HOLD_position", position = "center")%>%
+      column_spec(1,border_left = TRUE) %>%
+   column_spec(col=7, bold = T, border_left = T, color = 'white',background = ifelse(pitch_log$Actual == 'BALL', '#339a1d', '#ba1c0f')) %>%
+      row_spec(row = 0, color = "white", background = "#006F71") %>%
+      column_spec(ncol(pitch_log), border_right = TRUE)
+
+```
+\vspace{-0.5cm}
+\begin{center}
+\CoastalFont\textbf{\Large Throwing Report}
+\end{center} 
+
+
+
+\centering
+```{r throwplot, echo=FALSE, warning=FALSE }
+ThrowPlot
+```
+
+\centering
+```{r tables, echo=FALSE, warning=FALSE, fig.width=2,fig.height=2}
+kable(Throwlog, table.envir = 'NewFont', format = "latex",  linesep = "") %>%
+      row_spec(seq(2, nrow(Throwlog), by = 2), background = "#f2f2f2") %>%
+  kable_styling(latex_options = "HOLD_position", position = "center")%>%
+      column_spec(1,border_left = TRUE) %>%
+      row_spec(row = 0, color = "white", background = "#006F71") %>%
+      column_spec(ncol(Throwlog), border_right = TRUE)
+```
+
+
+
+
+
+
+
+
