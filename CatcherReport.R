@@ -13,18 +13,18 @@ library(cfbplotR)
 library(ggforce)
 library(cowplot)
 library(gridExtra)
-# THIS DOCUMNET WILL ALLOW YOU TO MAKE POST GAME PITCHER REPORTS USING TrackMan DATA. IT COULD BE USED TO MAKE REPORTS FOR TRACKMAN DATA AS WELL SINCE THE NAMING CONVENTIONS ARE VERY SIMILAR, BUT MENTION OF COLUMN 'yt_Efficiency' NEEDS TO BE REMOVED
+# THIS DOCUMNET WILL ALLOW YOU TO MAKE POST GAME CATCHER REPORTS USING TrackMan DATA. 
 
 # OPTIONAL - CREATE A DISCORD WEBHOOK FOR AUTOMATED NOTIFICATIONS
 conn_obj <- create_discord_connection(webhook = 'https://discord.com/api/webhooks/1278067437127864401/2Wr-ZtbBT8wK-sbKBbFYrSDFo-46WKutGEc_VxL-xcbP5pM8_jONvO3ar5tHTMfM4isT',
                                       username = paste('Report Maker', emoji('robot')), set_default = TRUE)
 
-send_webhook_message(paste("Generating Chanticleers Pitchers Game Reports"))
+send_webhook_message(paste("Generating Chanticleers Catcher Game Report(s)"))
 
 #this loads the new CSV and transforms it to add more columns and clean up some player names
 ccu_24 <-  read.csv("/Users/aaronstaehely/Downloads/20241026-SpringsBrooksStadium-Private-1_unverified.csv")
 
-#rename the dataset and filter by the boomers most recent game
+#rename the dataset and filter by the teams most recent game, optional if just importint one file at a time
 Track <- ccu_24 %>%
   # FILTER
   filter(PitcherTeam %in% c('COA_CHA','CCU_PRA')) |>
@@ -46,7 +46,7 @@ pitch_colors = c("Fastball" = '#FA8072',
                  "ChangeUp" = '#90EE90',
                  "Splitter" = '#90EE32',
                  "Cutter" = "red")
-
+#Indicators used for this report and other reports
 Track <- Track %>%
   mutate(
     EarlyIndicator = ifelse(
@@ -170,16 +170,16 @@ Track$TaggedPitchType <- factor(Track$TaggedPitchType, levels = c("Fastball", "S
 
 # extract the date for the title of the report and change to different format
 game_date <- unique(format(as.Date(Track$Date, format = "%m/%d/%y"), "%d/%m/%y"))
-#each pitcher that pitched in the previous game
+#each catcher that caught in the previous game
 catchers <- unique(Track$Catcher)
 # this will send a message telling you how many reports are being made
-send_webhook_message(paste(length(catchers),"new pitcher reports being generated."))
+send_webhook_message(paste(length(catchers),"new catcher reports being generated."))
 
 # LOOP ---------
 
 # For each pitcher in the dataset, run through the following code
 for (catcher in catchers) {
-  # Filter the data for the current pitcher
+  # Filter the data for the current catcher
   catcher_data <- Track[Track$Catcher == catcher, ]
   
   IP <- catcher_data |>
@@ -193,10 +193,10 @@ for (catcher in catchers) {
   #   dplyr::summarize(
   #    total_outs = sum(OutsOnPlay) + sum(KorBB == 'Strikeout'),
   #  innings_pitched = total_outs %/% 3 + (total_outs %% 3)/10)
-  # Generate the game summary / pitch characteristics table
+  
+  # Generate the catcher +/- table
   game_summary_table <- 
     catcher_data %>%
-    # using recode will allow us to save space on the document
     dplyr::summarize(
       'Strikes Stolen' = sum(StolenStrike),
       'Strikes Lost' = sum(StrikeLost),
@@ -204,7 +204,7 @@ for (catcher in catchers) {
       )
   
   
-  # Pitch location plot vs rhh with a facet wrap on one of the created columns
+  # Stolen Strikes Plot
   StolenStrikes <- catcher_data %>% 
     filter(
       StolenStrike == 1
@@ -233,7 +233,7 @@ for (catcher in catchers) {
     ) + labs(title = 'Strikes Stolen')+
   coord_fixed()
   
-
+  # Lost Strikes Plot
   LostStrikes <- catcher_data %>% 
     filter(
       StrikeLost == 1
@@ -262,6 +262,8 @@ for (catcher in catchers) {
     ) + labs(title = 'Strikes Lost')+
     coord_fixed()
 
+
+  # Throwdown plot, colored by throw speed
   ThrowPlot <- catcher_data %>% 
     filter(
       Notes == '2b out' | Notes == '2b safe'
@@ -287,7 +289,8 @@ for (catcher in catchers) {
           axis.text.x=element_blank(), #remove x axis labels
           axis.text.y=element_blank(),  #remove y axis labels
     ) + coord_fixed()
-  
+
+  # OPTIONAL: Create Pitch Log of the stolen or lost strikes, good for video review
   pitch_log <- catcher_data %>%
     filter(
       StolenStrike == 1 | StrikeLost == 1
@@ -298,7 +301,9 @@ for (catcher in catchers) {
       'Actual' = ifelse(StrikeZoneIndicator == 1, "STRIKE", "BALL"),
     ) %>%
     select(PitchNo, 'Pitch', Pitcher , Catcher , Batter , 'Pitch', PitchCall, 'Actual')
-  
+
+
+  #Throwdown log
   Throwlog <- catcher_data %>%
     filter(
       Notes == '2b out' | Notes == '2b safe' | Notes == '3b out' | Notes == '3b safe') %>%
