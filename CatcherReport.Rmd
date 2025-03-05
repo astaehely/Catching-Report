@@ -15,10 +15,10 @@ header-includes:
 - \usepackage{titlesec}
 - \usepackage{fontspec}
 - \usepackage{float}
-- \graphicspath{{/Users/aaronstaehely/Documents/CCU Analytics/Logos}}
-- \newfontfamily\CoastalFont[Path=/Users/aaronstaehely/Library/Fonts/City Bold/]{City Bold.ttf}
+- \graphicspath{{/path/to/logos}}
+- \newfontfamily\CoastalFont[Path=/path/to/fonts/City Bold/]{City Bold.ttf}
 - \newenvironment{Coastaltablefont}{\CoastalFont}{}
-- \newfontfamily\NewFont[Path=/System/Library/Fonts/]{Avenir.ttc}
+- \newfontfamily\NewFont[Path=/path/to/fonts/]{Avenir.ttc}
 - \newenvironment{ctable2}{\Newfont}{}
 - \newgeometry{left=1.5cm, right=1.5cm, top=0.5cm, bottom=0.1cm}
 ---
