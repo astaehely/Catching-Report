@@ -16,12 +16,12 @@ library(gridExtra)
 library(readxl)
 
 # OPTIONAL - CREATE A DISCORD WEBHOOK FOR AUTOMATED NOTIFICATIONS
-conn_obj <- create_discord_connection(webhook = 'https://discord.com/api/webhooks/1278067437127864401/2Wr-ZtbBT8wK-sbKBbFYrSDFo-46WKutGEc_VxL-xcbP5pM8_jONvO3ar5tHTMfM4isT',
+conn_obj <- create_discord_connection(webhook = 'discord link',
                                       username = paste('Report Maker', emoji('robot')), set_default = TRUE)
 
 send_webhook_message(paste("Generating Chanticleers Pitchers Game Reports"))
 
-ccu_24 <-  read.csv("/Users/aaronstaehely/Documents/CCU Analytics/20250304-UNC-1_unverified.csv")
+ccu_24 <-  read.csv("Trackman.csv")
 Track <- ccu_24 %>%
   # FILTER
   filter(PitcherTeam %in% c('COA_CHA','CCU_PRA'))
@@ -429,8 +429,8 @@ for (catcher in catchers) {
   # SETS THE DATE FOR THE FILE NAME
   file_date <- format(as.Date(catcher_data$Date[1], format = "%m/%d/%y"), "%m-%d")
   # Knit the R Markdown file to PDF
-  rmarkdown::render(input = "/Users/aaronstaehely/Library/CloudStorage/OneDrive-CoastalCarolinaUniversity/Coastal Carolina Baseball Analytics/Code - WorkBooks/CatcherReport.Rmd",
-                    output_file = paste0("/Users/aaronstaehely/Library/CloudStorage/OneDrive-CoastalCarolinaUniversity/Reports/Postgame/",file_date," ",catcher, " report",".pdf"),
+  rmarkdown::render(input = "/path/CatcherReport.Rmd",
+                    output_file = paste0("path/where/to/save/",file_date," ",catcher, " report",".pdf"),
                     params = params)
 }
 
