@@ -46,24 +46,30 @@ knitr::opts_chunk$set(fig.pos = '!h')
 \end{center}
 
 \vspace{-1cm}
-\hspace{-6cm}
-\includegraphics[width = 2cm, height = 1cm]{CCUlogo}
-\hspace{14.5cm}
+\includegraphics[width = 2cm, height = 1cm]{Chant Hat Logo}
 \vspace{-0.4cm}
-\includegraphics[width = 2cm, height = 1cm]{SBClogo}
-\vspace{-5mm}
+\hfill
+\includegraphics[width = 2cm, height = 1cm]{Own It Bronze}
+
 \begin{center}
 \CoastalFont\textbf{\Large Receiving}
 \end{center}
-
+\vspace{-2mm}
 ```{r +/-, echo = FALSE, warning = FALSE }
+
+kable(oppcatcher, table.envir = 'NewFont', format = "latex",  linesep = "") %>%
+  kable_styling(latex_options = "HOLD_position", position = "center")%>%
+      column_spec(1,border_left = TRUE) %>%
+      row_spec(row = 0, color = "white", background = "#006F71") %>%
+      column_spec(ncol(oppcatcher), border_right = TRUE)
+
 kable(game_summary_table, table.envir = 'NewFont', format = "latex",  linesep = "") %>%
   kable_styling(latex_options = "HOLD_position", position = "center")%>%
       column_spec(1,border_left = TRUE) %>%
-      column_spec(3, bold = T, border_left = T, color = 'white',
-                  background = ifelse('Game +/-' > 0 & 'Game +/-' < 3, '#93EA8E',
-                                      ifelse('Game +/-' >=3,'#339a1d',
-                                             ifelse('Game +/-' < 0 & 'Game +/-' > -3, '#eaa48e', '#ba1c0f')))) %>%
+      column_spec(3, bold = T, border_left = T, color = 'black',
+                  background = ifelse(game_summary_table$`CCU Game +/-` > oppcatcher$`Opp Game +/-`, '#339a1d',
+                                      ifelse(game_summary_table$`CCU Game +/-` < oppcatcher$`Opp Game +/-`,'#ba1c0f',
+                                             '#ffffff'))) %>%
       row_spec(row = 0, color = "white", background = "#006F71") %>%
       column_spec(ncol(game_summary_table), border_right = TRUE)
 ```
@@ -76,7 +82,7 @@ grid.arrange(StolenStrikes, LostStrikes, ncol = 2)
 ```{r log, echo=FALSE, warning=FALSE }
 
 kable(pitch_log, table.envir = 'NewFont', format = "latex",  linesep = "") %>%
-      row_spec(seq(2, nrow(pitch_log), by = 2), background = "#f2f2f2") %>%
+      #row_spec(seq(2, nrow(pitch_log), by = 2), background = "#f2f2f2") %>%
   kable_styling(latex_options = "HOLD_position", position = "center")%>%
       column_spec(1,border_left = TRUE) %>%
    column_spec(col=7, bold = T, border_left = T, color = 'white',background = ifelse(pitch_log$Actual == 'BALL', '#339a1d', '#ba1c0f')) %>%
@@ -97,11 +103,11 @@ ThrowPlot
 ```
 
 \centering
-```{r tables, echo=FALSE, warning=FALSE, fig.width=2,fig.height=2}
+```{r tables, echo=FALSE, warning=FALSE, fig.width=3,fig.height=2}
 kable(Throwlog, table.envir = 'NewFont', format = "latex",  linesep = "") %>%
-      row_spec(seq(2, nrow(Throwlog), by = 2), background = "#f2f2f2") %>%
+      #row_spec(seq(2, nrow(Throwlog), by = 2), background = "#f2f2f2") %>%
   kable_styling(latex_options = "HOLD_position", position = "center")%>%
-      column_spec(1,border_left = TRUE) %>%
+      column_spec(0,border_left = TRUE) %>%
       row_spec(row = 0, color = "white", background = "#006F71") %>%
       column_spec(ncol(Throwlog), border_right = TRUE)
 ```
